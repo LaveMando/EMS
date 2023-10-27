@@ -21,10 +21,15 @@ const LeaveApplicationForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+  
+    axios.post('http://localhost:3000/send-email', formData)
+      .then((response) => {
+         console.log(response.data);
+      }, (error) => {
+         console.log(error);
+      });
   };
-
+  
   return (
     <div className='leave-form-container'>
       <h2>Leave Application Form</h2>
