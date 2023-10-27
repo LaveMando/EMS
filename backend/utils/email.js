@@ -9,15 +9,15 @@ app.post('/send-email', (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'your-email@gmail.com',
-      pass: 'your-password'
+      user: '',
+      pass: ''
     }
   });
 
   // Set up email data
   const mailOptions = {
-    from: 'your-email@gmail.com',
-    to: 'manager-email@gmail.com',
+    from: '',
+    to: 'ltmandoza@gmail.com',
     subject: 'Leave Application',
     text: `Employee Name: ${formData.employeeName}\nStart Date: ${formData.startDate}\nEnd Date: ${formData.endDate}\nLeave Category: ${formData.leaveCategory}\nAdditional Explanation: ${formData.additionalExplanation}`
   };
