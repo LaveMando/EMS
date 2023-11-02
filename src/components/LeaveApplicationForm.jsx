@@ -1,6 +1,7 @@
 //leave application form
 import React, { useState } from 'react';
 import './leave.css';
+import axios from 'axios';
 
 const LeaveApplicationForm = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const LeaveApplicationForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   
-    axios.post('http://localhost:3000/send-email', formData)
+    axios.post('http://localhost:8800/send_email', formData)
       .then((response) => {
          console.log(response.data);
       }, (error) => {
