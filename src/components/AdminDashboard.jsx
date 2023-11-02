@@ -10,8 +10,9 @@ const AdminDashboard = () => {
     id: '',
     name: '',
     email: '',
+    department: '',
     onLeave: false,
-    department: ''
+    address: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -23,12 +24,12 @@ const AdminDashboard = () => {
         employee.id === editID ? newEmployee : employee
       );
       setEmployees(updatedEmployees);
-      setNewEmployee({ id: '', name: '', email: '', onLeave: false, department: '' });
+      setNewEmployee({ id: '', name: '', email: '', departrment: '', onLeave: false, address: '' });
       setEditID(null);
       setIsEditing(false);
     } else {
       setEmployees([...employees, { ...newEmployee, id: Date.now() }]);
-      setNewEmployee({ id: '', name: '', email: '', onLeave: false, department: '' });
+      setNewEmployee({ id: '', name: '', email: '', department: '', onLeave: false, adress: '' });
     }
   };
 
@@ -91,6 +92,13 @@ const AdminDashboard = () => {
           type="text"
           name="department"
           placeholder="Employee Department"
+          value={newEmployee.department}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="Employee Address"
           value={newEmployee.department}
           onChange={handleInputChange}
         />
