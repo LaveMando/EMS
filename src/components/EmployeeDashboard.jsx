@@ -13,16 +13,16 @@ const EmployeeDashboard = () => {
       <h1>Employee Dashboard</h1>
       <ul>
         <li>
-          <Link to="resources">Resources</Link>
+          <Link to="/resources">Resources</Link>
         </li>
         <li>
-          <Link to="knowledge_base">Knowledge Base</Link>
+          <Link to="/knowledge_base">Knowledge Base</Link>
         </li>
         <li>
-          <Link to="leave_application">Leave Application Form</Link>
+          <Link to="/leave_application">Leave Application Form</Link>
         </li>
         <li>
-          <Link to="logout">Logout</Link>
+          <Link to="/logout">Logout</Link>
         </li>
       </ul>
       <Outlet />
