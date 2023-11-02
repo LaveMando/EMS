@@ -19,13 +19,12 @@ function App() {
         <Route path="/" element={<Start />} />
         <Route path="/adminlogin" element={<Login />} />
         <Route path="/employee_login" element={<EmployeeLogin />} />
-        <Route path="/admin" element={<PrivateRoute> <AdminDashboard /> </PrivateRoute>}>
-          <Route index element={<EmployeeDashboard />} />
-          <Route path="resources" element={<Resources />} />
-          <Route path="knowledge_base" element={<KnowledgeBase />} />
-          <Route path="leave_application" element={<LeaveApplicationForm />} />
-          <Route path="logout" element={<Logout />} />
-        </Route>
+        <Route exact path="/dashboard" element={<AdminDashboard />} />
+        <Route exact path='/employeeDash' element={<EmployeeDashboard />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/knowledge_base" element={<KnowledgeBase />} />
+        <Route exact path="/leave_application" element={<LeaveApplicationForm />} />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </BrowserRouter>
   );
