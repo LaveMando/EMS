@@ -36,6 +36,40 @@ app.get('/employeelog', (req, res)=> {
     })
 } )
 
+app.post('/leave/application', (req, res) => {
+  const formData = req.body;
+
+  // Insert the form data into the "leave_requests" table
+  const query = 'INSERT INTO leave_requests (employeeName, startDate, endDate, leaveCategory, additionalExplanation, status) VALUES (?, ?, ?, ?, ?, "Pending")';
+  const values = [formData.employeeName, formData.startDate, formData.endDate, formData.leaveCategory, formData.additionalExplanation];
+
+  con.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting data into the database:', err);
+      res.status(500).json({ error: 'An error occurred' });
+      return;
+    }
+
+    console.log('Data inserted into the database');
+    res.json({ message: 'Leave application submitted successfully' });
+  });
+});
+
+app.get('/leave_application', (req, res) => {
+  const query = 'SELECT * FROM leave_requests';
+
+  con.query(query, (err, data) => {
+    if (err) {
+      console.error('Error fetching data from the database:', err);
+      res.status(500).json({ error: 'An error occurred' });
+      return;
+    }
+
+    console.log('Data fetched from the database');
+    res.json(data);
+  });
+});
+
 app.post('/send_email', (req, res) => {
     const formData = req.body;
   
@@ -53,13 +87,48 @@ app.post('/send_email', (req, res) => {
       from: '"Leave Application" <ltmandoza@gmail.com>', // sender address
       to: 'lavemando@gmail.com', // list of receivers
       subject: 'New Leave Application', // Subject line
-      text: `Employee Name: ${formData.employeeName}
-             Start Date of Leave: ${formData.startDate}
-             End Date of Leave: ${formData.endDate}
-             Leave Category: ${formData.leaveCategory}
-             Additional Explanation: ${formData.additionalExplanation}`, // plain text body
-    };
+      html: `
+      <p>Employee Name: ${formData.employeeName}</p>
+      <p>Start Date of Leave: ${formData.startDate}</p>
+      <p>End Date of Leave: ${formData.endDate}</p>
+      <p>Leave Category: ${formData.leaveCategory}</p>
+      <p>Additional Explanation: ${formData.additionalExplanation}</p>
+      <p>Please click the following links to accept or reject the leave request:</p>
+      <a href="http://localhost:5173/accept">Accept</a>
+      <a href="http://localhost:5173/reject">Reject</a>
+    `,
+  };
+
+    app.get('/leave/accept', (req, res) => {
+        app.get('/leave/accept', (req, res) => {
+            const leaveRequestId = req.query.id;
+            const updateQuery = `UPDATE leave_requests SET status = 'Accepted' WHERE id = ?`;
+              // Insert the form data into the "leave_requests" table
+            const query = 'INSERT INTO leave_requests (employeeName, startDate, endDate, leaveCategory, additionalExplanation, status) VALUES (?, ?, ?, ?, ?, "Accepted")';
+            const values = [formData.employeeName, formData.startDate, formData.endDate, formData.leaveCategory, formData.additionalExplanation];
+
+            connection.query(query, values, (err, result) => {
+              if (err) {
+                console.error('Error inserting data into the database:', err);
+                res.status(500).json({ error: 'An error occurred' });
+                return;
+              }
+
+              console.log('Data inserted into the database');
+              res.json({ message: 'Leave application submitted successfully' });
+            });
   
+            con.query(updateQuery, [leaveRequestId], (err, result) => {
+              if (err) {
+                return res.send('Error accepting leave request.');
+              }
+              return res.send('Leave request accepted.');
+            });
+          });
+    res.send('Leave request accepted.');
+});
+  
+
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
