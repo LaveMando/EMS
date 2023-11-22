@@ -3,14 +3,26 @@ import './leave.css';
 import axios from 'axios';
 
 const LeaveApplicationForm = () => {
+
+  var token = Math.floor(Math.random() * 100000000000);
+
+  // Format the token as a string with leading zeros
+  var formattedToken = String(Math.floor(Math.random() * 100000000000)).padStart(11, '0');
+
+  // Concatenate the prefix 'sg-' with the formatted token
+  var token = 'sg-' + formattedToken;
+
+
   const initialFormData = {
     employeeName: '',
     startDate: '',
     endDate: '',
     leaveCategory: '',
     additionalExplanation: '',
+    token:{token},
     sent: false
   };
+
 
   const [formData, setFormData] = useState(initialFormData);
   const [showNotification, setShowNotification] = useState(false);
@@ -93,6 +105,11 @@ const LeaveApplicationForm = () => {
             onChange={handleInputChange}
             required
             min={formData.startDate} // Set min attribute to the selected start date
+          />
+          <input
+            type='hidden'
+            name='token'
+            value={token}
           />
         </div>
         <div>
