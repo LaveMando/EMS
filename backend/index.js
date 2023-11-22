@@ -38,10 +38,17 @@ app.get('/employeelog', (req, res)=> {
 
 app.post('/leave/application', (req, res) => {
   const formData = req.body;
+  var token = Math.floor(Math.random() * 100000000000);
+
+  // Format the token as a string with leading zeros
+  var formattedToken = String(token).padStart(11, '0');
+
+  // Concatenate the prefix 'sg-' with the formatted token
+  var token = 'sg-' + formattedToken;
 
   // Insert the form data into the "leave_requests" table
-  const query = 'INSERT INTO leave_requests (employeeName, startDate, endDate, leaveCategory, additionalExplanation, status) VALUES (?, ?, ?, ?, ?, "Pending")';
-  const values = [formData.employeeName, formData.startDate, formData.endDate, formData.leaveCategory, formData.additionalExplanation];
+  const query = 'INSERT INTO leave_requests (employeeName, startDate, endDate, leaveCategory, additionalExplanation, status,token) VALUES (?, ?, ?, ?, ?, "Pending", ?)';
+  const values = [formData.employeeName, formData.startDate, formData.endDate, formData.leaveCategory, formData.additionalExplanation,token];
 
   con.query(query, values, (err, result) => {
     if (err) {
@@ -56,9 +63,10 @@ app.post('/leave/application', (req, res) => {
 });
 
 app.get('/leave_application', (req, res) => {
-  const query = 'SELECT * FROM leave_requests';
+  const tokenValue = req.query.token; // or however you get the token
+  const query = 'SELECT * FROM leave_requests WHERE token = ?';
 
-  con.query(query, (err, data) => {
+  con.query(query, [tokenValue], (err, data) => {
     if (err) {
       console.error('Error fetching data from the database:', err);
       res.status(500).json({ error: 'An error occurred' });
@@ -72,6 +80,8 @@ app.get('/leave_application', (req, res) => {
 
 app.post('/send_email', (req, res) => {
     const formData = req.body;
+    console.log(formData.token.token)
+    // {token:sg52525252525}
   
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
@@ -94,40 +104,64 @@ app.post('/send_email', (req, res) => {
       <p>Leave Category: ${formData.leaveCategory}</p>
       <p>Additional Explanation: ${formData.additionalExplanation}</p>
       <p>Please click the following links to accept or reject the leave request:</p>
-      <a href="http://localhost:5173/accept">Accept</a>
-      <a href="http://localhost:5173/reject">Reject</a>
+      <a href="http://localhost:5173/accept/${formData.token.token}">Accept</a>
+      <a href="http://localhost:5173/reject/${formData.token.token}">Reject</a>
+
     `,
   };
 
-    app.get('/leave/accept', (req, res) => {
-        app.get('/leave/accept', (req, res) => {
-            const leaveRequestId = req.query.id;
-            const updateQuery = `UPDATE leave_requests SET status = 'Accepted' WHERE id = ?`;
-              // Insert the form data into the "leave_requests" table
-            const query = 'INSERT INTO leave_requests (employeeName, startDate, endDate, leaveCategory, additionalExplanation, status) VALUES (?, ?, ?, ?, ?, "Accepted")';
-            const values = [formData.employeeName, formData.startDate, formData.endDate, formData.leaveCategory, formData.additionalExplanation];
 
-            connection.query(query, values, (err, result) => {
-              if (err) {
-                console.error('Error inserting data into the database:', err);
-                res.status(500).json({ error: 'An error occurred' });
-                return;
-              }
+  app.put('/accept/:id', (req, res) => {
+    const token = req.params.id; // Get the ID from the URL parameter
 
-              console.log('Data inserted into the database');
-              res.json({ message: 'Leave application submitted successfully' });
-            });
-  
-            con.query(updateQuery, [leaveRequestId], (err, result) => {
-              if (err) {
-                return res.send('Error accepting leave request.');
-              }
-              return res.send('Leave request accepted.');
-            });
-          });
-    res.send('Leave request accepted.');
+    // Fetch leave request details based on the token
+    const selectQuery = 'SELECT * FROM leave_requests WHERE token = ?';
+    con.query(selectQuery, [token], (selectErr, result) => {
+        if (selectErr) {
+            console.error('Error fetching leave request details:', selectErr);
+            return res.status(500).send('Error fetching leave request details.');
+        }
+
+        if (result.length === 0) {
+            return res.status(404).send('Leave request not found.');
+        }
+
+        const leaveRequestDetails = result[0];
+
+        // Update the status to 'Accepted'
+        const status = 'Accepted';
+        const updateQuery = 'UPDATE leave_requests SET status = ? WHERE token = ?';
+        con.query(updateQuery, [status, token], (updateErr, updateResult) => {
+            if (updateErr) {
+                console.error('Error processing leave request:', updateErr);
+                return res.status(500).send('Error processing leave request.');
+            }
+
+            console.log(`Leave request accepted. Rows affected: ${updateResult.affectedRows}`);
+            res.json({ message: 'Leave request accepted.', details: leaveRequestDetails });
+        });
+    });
 });
+
   
+  app.put('/reject/:id', (req, res) => {
+    const token = req.params.id; // Get the ID from the URL parameter
+  
+    const status = 'Rejected';
+    const updateQuery = 'UPDATE leave_requests SET status = ? WHERE token = ?';
+  
+    con.query(updateQuery, [status, token], (err, result) => {
+      if (err) {
+        console.error('Error processing leave request:', err);
+        return res.status(500).send('Error processing leave request.');
+      }
+  
+      console.log(`Leave request rejected. Rows affected: ${result.affectedRows}`);
+      res.send(`Leave request rejected.`);
+    });
+  });
+   
+   
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
