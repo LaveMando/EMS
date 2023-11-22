@@ -4,45 +4,15 @@ import axios from "axios";
 const OnLeave = () => {
   const [leaveData, setLeaveData] = useState([]);
 
-  useEffect(() => {
+  const fetchLeaveData = () => {
     axios.get("http://localhost:8800/leave_application").then((response) => {
       setLeaveData(response.data);
     });
+  };
+
+  useEffect(() => {
+    fetchLeaveData();
   }, []);
-
-  const handleAccept = (id) => {
-    axios.put(`http://localhost:8800/leave_application/${id}`, { status: 'Accepted' })
-      .then((response) => {
-        console.log(response.data);
-        // Refresh the leave data
-        fetchLeaveData();
-      })
-      .catch((error) => {
-        console.error('An error occurred:', error);
-      });
-  };
-  
-  const handleReject = (id) => {
-    axios.put(`http://localhost:8800/leave_application/${id}`, { status: 'Rejected' })
-      .then((response) => {
-        console.log(response.data);
-        // Refresh the leave data
-        fetchLeaveData();
-      })
-      .catch((error) => {
-        console.error('An error occurred:', error);
-      });
-  };
-
-  const fetchLeaveData = () => {
-  axios.get("http://localhost:8800/leave_application").then((response) => {
-    setLeaveData(response.data);
-  });
-};
-
-useEffect(() => {
-  fetchLeaveData();
-}, []);
 
   return (
     <div className="container">
@@ -68,10 +38,6 @@ useEffect(() => {
                 <td>{item.leaveCategory}</td>
                 <td>{item.additionalExplanation}</td>
                 <td>{item.status}</td>
-                <td>
-                 <button onClick={() => handleAccept(item.id)}>Accept</button>
-                 <button onClick={() => handleReject(item.id)}>Reject</button>
-                </td>
               </tr>
             ))}
         </tbody>
