@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Request Form</title>
+</head>
+<body onload="setMinDate()">
+
+<h2>Leave Request Form</h2>
+
+<form action="{{ url_for('submit_leave_request') }}" method="post">
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" required>
+    <br>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" required>
+    <br>
+
+    <script>
+        // Set the minimum date for the date input fields to the current date
+        function setMinDate() {
+            var currentDate = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').min = currentDate;
+            document.getElementById('endDate').min = currentDate;
+        }
+    </script>
+    
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="startDate" required>
+    <br>
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="endDate" required>
+    <br>
+
+    <label for="leaveCategory">Leave Category</label>
+    <select>
+            <option value=''>Select a category</option>
+            <option value='sick leave'>Sick Leave</option>
+            <option value='maternity leave'>Maternity Leave</option>
+            <option value='annual leave'>Annual Leave</option>
+            <option value='compassionate leave'>Compassionate Leave</option>
+            <option value='parental leave'>Parental Leave</option>
+            <option value='medical appointment'>Medical Appointment</option>
+            <option value='study leave'>Study Leave</option>
+          </select>
+
+    <label for="additionalExplanation">Additional Explanation:</label>
+    <textarea id="additionalExplanation" name="additionalExplanation" rows="4" cols="50"></textarea>
+    <br>
+
+</form>
+
+</body>
+</html>
