@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from datetime import date
 import pymysql
 import pymysql.cursors
+import smtplib
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
@@ -68,7 +71,7 @@ def logout():
 
 @app.route('/leaveform')
 def leaveform():
-    from datetime import date
+    return render_template('leaveform.html')
 
 @app.route('/submit_leave_request', methods=['POST'])
 def submit_leave_request():
@@ -90,8 +93,31 @@ def submit_leave_request():
         cursor.execute(sql, (firstName, lastName, dateOfRequest, startDate, endDate, leaveCategory, additionalExplanation, status))
         connection.commit()
 
-    return redirect(url_for('employee_dashboard'))  # Redirect the user back to the employee dashboard
-return render_template('leaveform.html')
+        # Prepare the email content
+        subject = 'New Leave Request'
+        message = f'{firstName} {lastName} has submitted a new leave request.\n\nStart Date: {startDate}\nEnd Date: {endDate}\nLeave Category: {leaveCategory}\nAdditional Explanation: {additionalExplanation}'
+        recipient = 'lavemando@gmail.com'
+
+
+        # Send the email
+        send_email(subject, message, recipient)
+
+        return redirect(url_for('employee_dashboard'))  # Redirect the user back to the employee dashboard
+    return render_template('leaveform.html')
+
+def send_email(subject, message, recipient):
+    sender = 'ltmandoza@gmail.com'
+    password = 'ogsz caxf rxer zphw'
+    msg = MIMEText(message)
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = recipient
+
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(sender, password)
+    server.send_message(msg)
+    server.quit()
 
 if __name__ == '__main__':
     app.run(debug=True)
