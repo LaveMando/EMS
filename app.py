@@ -89,8 +89,9 @@ def submit_leave_request():
         sql = """
         INSERT INTO `leaverequests` (`firstName`, `lastName`, `dateOfRequest`, `startDate`, `endDate`, `leaveCategory`, `additionalExplanation`, `status`)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-         """
+        """
         cursor.execute(sql, (firstName, lastName, dateOfRequest, startDate, endDate, leaveCategory, additionalExplanation, status))
+        request_id = cursor.lastrowid  # Get the ID of the last inserted row
         connection.commit()
 
         # Prepare the email content
@@ -100,14 +101,20 @@ def submit_leave_request():
 
 
         # Send the email
-        send_email(subject, message, recipient)
+        send_email(subject, message, recipient, request_id)
 
         return redirect(url_for('employee_dashboard'))  # Redirect the user back to the employee dashboard
     return render_template('leaveform.html')
 
-def send_email(subject, message, recipient):
+def send_email(subject, message, recipient, request_id):
     sender = 'ltmandoza@gmail.com'
     password = 'ogsz caxf rxer zphw'
+
+    accept_link = f'http://your-web-app.com/accept_leave_request/{request_id}'
+    reject_link = f'http://your-web-app.com/reject_leave_request/{request_id}'
+
+    message += f'\n\nAccept: {accept_link}\nReject: {reject_link}'
+
     msg = MIMEText(message)
     msg['Subject'] = subject
     msg['From'] = sender
@@ -118,6 +125,26 @@ def send_email(subject, message, recipient):
     server.login(sender, password)
     server.send_message(msg)
     server.quit()
+
+@app.route('/accept_leave_request/<int:request_id>')
+def accept_leave_request(request_id):
+    with connection.cursor() as cursor:
+        # Execute the SQL query
+        sql = "UPDATE `leaverequests` SET `status`='Accepted' WHERE `id`=%s"
+        cursor.execute(sql, (request_id,))
+        connection.commit()
+
+    return 'Leave request accepted'
+
+@app.route('/reject_leave_request/<int:request_id>')
+def reject_leave_request(request_id):
+    with connection.cursor() as cursor:
+        # Execute the SQL query
+        sql = "UPDATE `leaverequests` SET `status`='Rejected' WHERE `id`=%s"
+        cursor.execute(sql, (request_id,))
+        connection.commit()
+
+    return 'Leave request rejected'
 
 if __name__ == '__main__':
     app.run(debug=True)
