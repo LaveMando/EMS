@@ -110,8 +110,8 @@ def send_email(subject, message, recipient, request_id):
     sender = 'ltmandoza@gmail.com'
     password = 'ogsz caxf rxer zphw'
 
-    accept_link = f'http://your-web-app.com/accept_leave_request/{request_id}'
-    reject_link = f'http://your-web-app.com/reject_leave_request/{request_id}'
+    accept_link = f'http://localhost:5000/accept_leave_request/{request_id}'
+    reject_link = f'http://localhost:5000/reject_leave_request/{request_id}'
 
     message += f'\n\nAccept: {accept_link}\nReject: {reject_link}'
 
@@ -130,7 +130,7 @@ def send_email(subject, message, recipient, request_id):
 def accept_leave_request(request_id):
     with connection.cursor() as cursor:
         # Execute the SQL query
-        sql = "UPDATE `leaverequests` SET `status`='Accepted' WHERE `id`=%s"
+        sql = "UPDATE `leaverequests` SET `status`='Accepted' WHERE `request_id`=%s"
         cursor.execute(sql, (request_id,))
         connection.commit()
 
@@ -140,7 +140,7 @@ def accept_leave_request(request_id):
 def reject_leave_request(request_id):
     with connection.cursor() as cursor:
         # Execute the SQL query
-        sql = "UPDATE `leaverequests` SET `status`='Rejected' WHERE `id`=%s"
+        sql = "UPDATE `leaverequests` SET `status`='Rejected' WHERE `request_id`=%s"
         cursor.execute(sql, (request_id,))
         connection.commit()
 
