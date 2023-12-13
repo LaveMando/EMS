@@ -21,33 +21,35 @@ connection = pymysql.connect(**config)
 # Secret key for session management
 app.secret_key = '6912cdfb191cec485c8eb4b9ab812aac'
 
+#login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
+   if request.method == 'POST':
+       username = request.form['username']
+       password = request.form['password']
+       role = request.form['role']
 
-        with connection.cursor() as cursor:
-            # Execute the SQL query
-            sql = "SELECT * FROM `login` WHERE `username`=%s AND `password`=%s AND `role`=%s"
-            cursor.execute(sql, (username, password, role))
-            result = cursor.fetchone()
+       with connection.cursor() as cursor:
+           # Execute the SQL query
+           sql = "SELECT * FROM `login` WHERE `username`=%s AND `password`=%s AND `role`=%s"
+           cursor.execute(sql, (username, password, role))
+           result = cursor.fetchone()
 
-        if result:
-            session['logged_in'] = True
-            session['username'] = username
-            session['role'] = role
-            if role == 'admin':
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('employee_dashboard'))
-        else:
-            return render_template('login.html', error='Invalid login credentials')
+       if result:
+           session['logged_in'] = True
+           session['username'] = username
+           session['role'] = role
+           if role == 'admin':
+               return redirect(url_for('admin_dashboard'))
+           else:
+               return redirect(url_for('employee_dashboard'))
+       else:
+           return render_template('login.html', error='Invalid login credentials')
 
-    return render_template('login.html')
+   return render_template('login.html')
 
 
+#admin dashboard route after login
 @app.route('/admin_dashboard')
 def admin_dashboard():
     # Check if the user is logged in and is an admin
@@ -56,6 +58,7 @@ def admin_dashboard():
     else:
         return redirect(url_for('login'))
 
+#employee dashboard route after login
 @app.route('/employee_dashboard')
 def employee_dashboard():
     # Check if the user is logged in and is an employee
@@ -64,15 +67,16 @@ def employee_dashboard():
     else:
         return redirect(url_for('login'))
 
+#logout route
 @app.route('/logout')
 def logout():
-    
     return 'You have been logged out'
 
+#employee dashboard leave request form
 @app.route('/leaveform')
 def leaveform():
     return render_template('leaveform.html')
-
+#submission of leave request form
 @app.route('/submit_leave_request', methods=['POST'])
 def submit_leave_request():
     firstName = request.form['firstName']
@@ -99,20 +103,18 @@ def submit_leave_request():
         message = f'{firstName} {lastName} has submitted a new leave request.\n\nStart Date: {startDate}\nEnd Date: {endDate}\nLeave Category: {leaveCategory}\nAdditional Explanation: {additionalExplanation}'
         recipient = 'lavemando@gmail.com'
 
-
         # Send the email
         send_email(subject, message, recipient, request_id)
 
         return redirect(url_for('employee_dashboard'))  # Redirect the user back to the employee dashboard
     return render_template('leaveform.html')
-
+#function to send the email with accept and reject links
 def send_email(subject, message, recipient, request_id):
     sender = 'ltmandoza@gmail.com'
     password = 'ogsz caxf rxer zphw'
 
     accept_link = f'http://localhost:5000/accept_leave_request/{request_id}'
     reject_link = f'http://localhost:5000/reject_leave_request/{request_id}'
-
     message += f'\n\nAccept: {accept_link}\nReject: {reject_link}'
 
     msg = MIMEText(message)
@@ -126,25 +128,103 @@ def send_email(subject, message, recipient, request_id):
     server.send_message(msg)
     server.quit()
 
+#route to accept the leave request and change status of the leave request
 @app.route('/accept_leave_request/<int:request_id>')
 def accept_leave_request(request_id):
-    with connection.cursor() as cursor:
-        # Execute the SQL query
-        sql = "UPDATE `leaverequests` SET `status`='Accepted' WHERE `request_id`=%s"
-        cursor.execute(sql, (request_id,))
-        connection.commit()
+   with connection.cursor() as cursor:
+       # Execute the SQL query to update the status
+       sql = "UPDATE `leaverequests` SET `status`='Accepted' WHERE `request_id`=%s"
+       cursor.execute(sql, (request_id,))
+       connection.commit()
 
-    return 'Leave request accepted'
+       # Execute the SQL query to get the leave request details
+       sql = "SELECT * FROM `leaverequests` WHERE `request_id`=%s"
+       cursor.execute(sql, (request_id,))
+       leave_request = cursor.fetchone()
 
+   return render_template('leave_request_details.html', leave_request=leave_request)
+
+#route to reject the leave request and change status of the leave request
 @app.route('/reject_leave_request/<int:request_id>')
 def reject_leave_request(request_id):
+   with connection.cursor() as cursor:
+       # Execute the SQL query to update the status
+       sql = "UPDATE `leaverequests` SET `status`='Rejected' WHERE `request_id`=%s"
+       cursor.execute(sql, (request_id,))
+       connection.commit()
+
+       # Execute the SQL query to get the leave request details
+       sql = "SELECT * FROM `leaverequests` WHERE `request_id`=%s"
+       cursor.execute(sql, (request_id,))
+       leave_request = cursor.fetchone()
+
+   return render_template('leave_request_details.html', leave_request=leave_request)
+
+#admin dashboard display of employees on leave
+@app.route('/employees_on_leave')
+def employees_on_leave():
     with connection.cursor() as cursor:
         # Execute the SQL query
-        sql = "UPDATE `leaverequests` SET `status`='Rejected' WHERE `request_id`=%s"
-        cursor.execute(sql, (request_id,))
-        connection.commit()
+        sql = "SELECT * FROM `leaverequests`"
+        cursor.execute(sql)
+        leave_requests = cursor.fetchall()
 
-    return 'Leave request rejected'
+    return render_template('employees_on_leave.html', leave_requests=leave_requests)
+
+#admin dashboard employee management
+#display the employees
+@app.route('/edit_employee/<int:employee_id>', methods=['GET'])
+def edit_employee_form(employee_id):
+    with connection.cursor() as cursor:
+        sql = "SELECT * FROM `employees` WHERE `employee_id`=%s"
+        cursor.execute(sql, (employee_id,))
+        employee = cursor.fetchone()
+    return render_template('employee_details.html', employee=employee)
+
+#add employee/admin dashboard/employee management
+@app.route('/add_employee', methods=['GET', 'POST'])
+def add_employee():
+    if request.method == 'POST':
+        # Handle the POST request
+        # Existing code for handling POST request...
+        # Fetch the employee details from the database
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM `employees`"
+            cursor.execute(sql)
+            employees = cursor.fetchall()
+        # Pass the employee details to the template
+        return render_template('add_employee_form.html', employees=employees)
+    else:
+        # Handle the GET request
+        return render_template('add_employee_form.html')
+
+
+#edit employee details/admin dashboard/employee management
+@app.route('/edit_employee/<int:employee_id>', methods=['POST'])
+def edit_employee(employee_id):
+    firstName = request.form['firstName']
+    lastName = request.form['lastName']
+    email = request.form['email']
+    address = request.form['address']
+    department = request.form['department']
+    with connection.cursor() as cursor:
+        sql = """
+        UPDATE `employees` 
+        SET `firstName`=%s, `lastName`=%s, `email`=%s, `address`=%s, `department`=%s
+        WHERE `Employee_id`=%s
+        """
+        cursor.execute(sql, (firstName, lastName, email, address, department, employee_id))
+        connection.commit()
+    return render_template('employee_details.html')
+
+#delete employees/ admin dashboard/employee management
+@app.route('/delete_employee/<int:employee_id>', methods=['POST'])
+def delete_employee(employee_id):
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM `employees` WHERE `employee_id`=%s"
+        cursor.execute(sql, (employee_id,))
+        connection.commit()
+    return render_template('employee_details.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
