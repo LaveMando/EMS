@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employees on Leave</title>
+</head>
+<body>
+    <table border="1">
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Date of Request</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Leave Category</th>
+            <th>Additional Explanation</th>
+            <th>Status</th>
+        </tr>
+        {% for leave_request in leave_requests %}
+        <tr>
+            <td>{{ leave_request.firstName }}</td>
+            <td>{{ leave_request.lastName }}</td>
+            <td>{{ leave_request.dateOfRequest }}</td>
+            <td>{{ leave_request.startDate }}</td>
+            <td>{{ leave_request.endDate }}</td>
+            <td>{{ leave_request.leaveCategory }}</td>
+            <td>{{ leave_request.additionalExplanation }}</td>
+            <td>{{ leave_request.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
