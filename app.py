@@ -171,60 +171,81 @@ def employees_on_leave():
 
     return render_template('employees_on_leave.html', leave_requests=leave_requests)
 
-#admin dashboard employee management
-#display the employees
-@app.route('/edit_employee/<int:employee_id>', methods=['GET'])
-def edit_employee_form(employee_id):
+#admin dashboard/ employee management
+@app.route('/employee_management')
+def employee_management():
     with connection.cursor() as cursor:
-        sql = "SELECT * FROM `employees` WHERE `employee_id`=%s"
-        cursor.execute(sql, (employee_id,))
-        employee = cursor.fetchone()
-    return render_template('employee_details.html', employee=employee)
+        # Execute the SQL query
+        sql = "SELECT * FROM `employees`"
+        cursor.execute(sql)
+        employees = cursor.fetchall()
 
-#add employee/admin dashboard/employee management
-@app.route('/add_employee', methods=['GET', 'POST'])
+    return render_template('employee_management.html', employees=employees)
+
+@app.route('/add_employee', methods=['POST'])
 def add_employee():
-    if request.method == 'POST':
-        # Handle the POST request
-        # Existing code for handling POST request...
-        # Fetch the employee details from the database
-        with connection.cursor() as cursor:
-            sql = "SELECT * FROM `employees`"
-            cursor.execute(sql)
-            employees = cursor.fetchall()
-        # Pass the employee details to the template
-        return render_template('add_employee_form.html', employees=employees)
-    else:
-        # Handle the GET request
-        return render_template('add_employee_form.html')
-
-
-#edit employee details/admin dashboard/employee management
-@app.route('/edit_employee/<int:employee_id>', methods=['POST'])
-def edit_employee(employee_id):
     firstName = request.form['firstName']
     lastName = request.form['lastName']
     email = request.form['email']
     address = request.form['address']
     department = request.form['department']
+    on_leave = 'on_leave' in request.form
+
     with connection.cursor() as cursor:
+        # Execute the SQL query
         sql = """
-        UPDATE `employees` 
+        INSERT INTO `employees` (`firstName`, `lastName`, `email`, `address`, `department`, `on_leave`)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(sql, (firstName, lastName, email, address, department, on_leave))
+        connection.commit()
+
+    return redirect(url_for('employee_management'))
+
+@app.route('/edit_employee/<int:employee_id>', methods=['POST'])
+def edit_employee(employee_id):
+    print(request.form) 
+    firstName = request.form['firstName']
+    lastName = request.form['lastName']
+    email = request.form['email']
+    address = request.form['address']
+    department = request.form['department']
+
+    with connection.cursor() as cursor:
+        # Execute the SQL query
+        sql = """
+        UPDATE `employees`
         SET `firstName`=%s, `lastName`=%s, `email`=%s, `address`=%s, `department`=%s
-        WHERE `Employee_id`=%s
+        WHERE `employee_id`=%s
         """
         cursor.execute(sql, (firstName, lastName, email, address, department, employee_id))
         connection.commit()
-    return render_template('employee_details.html')
 
-#delete employees/ admin dashboard/employee management
+    return redirect(url_for('employee_management'))
+
+@app.route('/edit_employee/<int:employee_id>', methods=['GET'])
+def edit_employee_form(employee_id):
+    with connection.cursor() as cursor:
+        # Execute the SQL query
+        sql = "SELECT * FROM `employees` WHERE `employee_id`=%s"
+        cursor.execute(sql, (employee_id,))
+        employee = cursor.fetchone()
+
+    if employee is None:
+        # If there's no employee with the given ID, redirect to the employee management page
+        return redirect(url_for('employee_management'))
+
+    # Pass the employee's details to the template
+    return render_template('edit_employee_form.html', employee=employee)
+
 @app.route('/delete_employee/<int:employee_id>', methods=['POST'])
 def delete_employee(employee_id):
     with connection.cursor() as cursor:
+        # Execute the SQL query
         sql = "DELETE FROM `employees` WHERE `employee_id`=%s"
         cursor.execute(sql, (employee_id,))
         connection.commit()
-    return render_template('employee_details.html')
+    return redirect(url_for('employee_management'))
 
 if __name__ == '__main__':
     app.run(debug=True)
