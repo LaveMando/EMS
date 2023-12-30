@@ -1,0 +1,95 @@
+.logo-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 999; 
+}
+
+.logo-container img {
+    width: 100px; 
+    height: auto; 
+}
+
+body {
+    overflow: hidden;
+    background-color: white;
+    padding: 40px 30px 30px 30px;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    transform: translate(-50%, -50%);
+    transition: transform 300ms, box-shadow 300ms;
+    box-shadow: 5px 10px 10px rgba(0, 71, 171, 0.2);
+
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 1000px; /* Adjust the width */
+        height: 1000px; /* Adjust the height */
+        border-top-left-radius: 40%;
+        border-top-right-radius: 45%;
+        border-bottom-left-radius: 35%;
+        border-bottom-right-radius: 40%;
+        z-index: -1;
+    }
+
+    &::before {
+        left: 20%; 
+        bottom: -180%; 
+        background-color: rgba(173, 216, 230, 0.15);
+        animation: wawes 6s infinite linear;
+    }
+
+    &::after {
+        left: 15%; 
+        bottom: -160%; 
+        background-color: rgba(0, 71, 171, 0.2);
+        animation: wawes 7s infinite;
+    }
+
+}
+
+@keyframes wawes {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+
+.login {
+    background-color: rgba(255, 255, 255, 0.15);
+    font-family: 'Asap', sans-serif;
+
+    > input {
+        font-family: 'Asap', sans-serif;
+        display: block;
+        border-radius: 5px;
+        font-size: 16px;
+        background: white;
+        width: 100%;
+        border: 0;
+        padding: 10px 10px;
+        margin: 20px -10px;
+    }
+
+    > button {
+        font-family: 'Asap', sans-serif;
+        cursor: pointer;
+        color: #fff;
+        font-size: 16px;
+        text-transform: uppercase;
+        width: 80px;
+        border: 0;
+        padding: 10px 0;
+        margin-top: 10px;
+        margin-left: -5px;
+        border-radius: 5px;
+        background-color: rgb(167, 199, 231);
+        transition: background-color 300ms;
+    
+        &:hover {
+            background-color: rgb(0, 0, 128);
+        }
+    }
+    
+}
