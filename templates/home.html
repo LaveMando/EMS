@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/admin_style.css') }}">
+</head>
+<body>
+  <div id="sidebar">
+    <div id="logo-container">
+        <img src="{{ url_for('static', filename='/Sagehill white logo.png') }}" alt="Sagehill Logo">
+    </div>
+    <ul>
+        <li><a href="{{ url_for('home') }}" id="home">Home</a></li>
+        <li><a href="{{ url_for('employee_management') }}" id="employee-management">Employee Management</a></li>
+        <li><a href="{{ url_for('employees_on_leave') }}" id="employees-on-leave">Employees on Leave</a></li>
+    </ul>
+  </div>
+    <div class="container">
+      <h1> Welcome to the SageHill Admin Dashboard!</h1>
+      </div>
+    <p>
+      Effortlessly manage your SageHill ecosystem, from user administration to analytics. Navigate a seamless experience for streamlined operations and powerful insights. Lead with confidence and achieve unparalleled results. Our support team is here to assist you.
+      
+      Happy navigating!</p>
+      <p>Number of employees: {{ count }}</p>
+</body>
+</html>
+
+

@@ -48,15 +48,40 @@ def login():
 
    return render_template('login.html')
 
+@app.route('/')
+def go_to_login():
+   return redirect(url_for('login'))
 
 #admin dashboard route after login
 @app.route('/admin_dashboard')
 def admin_dashboard():
     # Check if the user is logged in and is an admin
     if 'logged_in' in session and session['role'] == 'admin':
-        return render_template('admin_dashboard.html')
+        with connection.cursor() as cursor:
+     # Execute the SQL query
+            sql = "SELECT COUNT(*) FROM `employees`"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if result is not None:
+                employee_count = result['COUNT(*)']
+            else:
+                employee_count = 0
+        return render_template('home.html', count=employee_count )
     else:
         return redirect(url_for('login'))
+
+@app.route('/home')
+def admin_home():
+ with connection.cursor() as cursor:
+     # Execute the SQL query
+     sql = "SELECT COUNT(*) FROM `employees`"
+     cursor.execute(sql)
+     result = cursor.fetchone()
+     if result is not None:
+         employee_count = result['COUNT(*)']
+     else:
+         employee_count = 0
+ return render_template('home.html', count=employee_count)
 
 #employee dashboard route after login
 @app.route('/employee_dashboard')
@@ -159,6 +184,12 @@ def reject_leave_request(request_id):
        leave_request = cursor.fetchone()
 
    return render_template('leave_request_details.html', leave_request=leave_request)
+
+#admin dashboard/ home page
+@app.route('/')
+def home():
+    employee_count = Employee.query.count()  # get the count of employees
+    return render_template('home.html', count=employee_count)
 
 #admin dashboard display of employees on leave
 @app.route('/employees_on_leave')

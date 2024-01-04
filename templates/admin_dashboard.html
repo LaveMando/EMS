@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/admin_style.css') }}">
+</head>
+<body>
+    <div id="sidebar">
+        <div id="logo-container">
+            <img src="{{ url_for('static', filename='/Sagehill white logo.png') }}" alt="Sagehill Logo">
+        </div>
+        <ul>
+            <li><a href="{{ url_for('home') }}" id="home">Home</a></li>
+            <li><a href="{{ url_for('employee_management') }}" id="employee-management">Employee Management</a></li>
+            <li><a href="{{ url_for('employees_on_leave') }}" id="employees-on-leave">Employees on Leave</a></li>
+        </ul>
+    </div>
+    <script src="{{ url_for('static', filename='/admin_script.js') }}"></script>
+</body>
+</html>
