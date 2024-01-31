@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/admin_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/home.css') }}">
 </head>
 <body>
   <div id="sidebar">
@@ -18,14 +18,12 @@
         <li><a href="{{ url_for('employees_on_leave') }}" id="employees-on-leave">Employees on Leave</a></li>
     </ul>
   </div>
-    <div class="container">
-      <h1> Welcome to the SageHill Admin Dashboard!</h1>
-      </div>
-    <p>
-      Effortlessly manage your SageHill ecosystem, from user administration to analytics. Navigate a seamless experience for streamlined operations and powerful insights. Lead with confidence and achieve unparalleled results. Our support team is here to assist you.
-      
-      Happy navigating!</p>
-      <p>Number of employees: {{ count }}</p>
+  <div class="content">
+    <h1>Welcome to the SageHill Admin Dashboard!</h1>
+    <p>Effortlessly manage your SageHill ecosystem, from user administration to analytics. Navigate a seamless experience for streamlined operations and powerful insights. Lead with confidence and achieve unparalleled results. Our support team is here to assist you. Happy navigating!
+    </p>
+    <p>Number of employees: {{ count }}</p>
+  </div>  
 </body>
 </html>
 
