@@ -1,31 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400&display=swap');
+
+body, h1, h2, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    overflow: hidden;
-    font-family: 'Asap', sans-serif;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
     color: black;
-    text-align: center;
+    text-align: var(--bs-body-text-align);
+    background-color: white;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    background-color: white;
-    padding: 40px 30px 30px 30px;
-    border-radius: 10px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 400px;
-    transform: translate(-50%, -50%);
-    transition: transform 300ms, box-shadow 300ms;
-    box-shadow: 5px 10px 10px rgba(0, 71, 171, 0.2);
+    overflow:hidden;
 
     &::before, &::after {
         content: '';
         position: absolute;
         width: 1000px; /* Adjust the width */
-        height: 1000px; /* Adjust the height */
-        border-top-left-radius: 40%;
-        border-top-right-radius: 45%;
+        height: 1500px; /* Adjust the height */
+        border-top-left-radius: 60%;
+        border-top-right-radius: 65%;
         border-bottom-left-radius: 35%;
         border-bottom-right-radius: 40%;
         z-index: -1;
@@ -50,4 +49,57 @@ body {
 @keyframes wawes {
     from { transform: rotate(0); }
     to { transform: rotate(360deg); }
+}
+  
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 5em; 
+    margin: 20px 0; 
+}
+
+p {
+    font-size: 1em; 
+    margin: 10px 0; 
+}
+
+.content {
+    margin-left: 250px; 
+    padding: 50px;
+}
+ 
+  #sidebar {
+    width: 200px;
+    height: 100%;
+    background-color: rgb(33, 33, 33);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 20px;
+}
+
+#logo-container {
+    text-align: left;
+    margin-left: 20px ;
+    margin-bottom: 20px;
+}
+
+#logo-container img {
+    width: 100px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#sidebar ul {
+    list-style-type: none;
+}
+
+#sidebar a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 10px;
+    border-bottom: 1px solid #555;
+}
+
+#sidebar a:hover {
+    background-color: rgb(5, 33, 60);
 }
